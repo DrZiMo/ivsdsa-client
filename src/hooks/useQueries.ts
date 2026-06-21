@@ -32,7 +32,7 @@ export const queryKeys = {
 export const useDashboardMetrics = () => {
   const { region, incomeLevel, residenceType } = useFilterStore()
 
-  return useQuery<DashboardMetrics>({
+  return useQuery<DashboardMetrics, Error>({
     queryKey: [...queryKeys.metrics(), { region, incomeLevel, residenceType }],
     queryFn: () =>
       dashboardAPI.getMetrics({
@@ -42,6 +42,8 @@ export const useDashboardMetrics = () => {
       }),
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
+    retry: 2,
+    retryDelay: 1000,
   })
 }
 

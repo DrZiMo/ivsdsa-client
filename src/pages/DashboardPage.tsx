@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { MainLayout } from '@/layouts/MainLayout'
 import {
   useDashboardMetrics,
+  useRegionalData,
   useServiceTrends,
   useActivityData,
   useSurveyResponses,
@@ -169,13 +170,56 @@ const MapController: React.FC<{
 
 // ─── RegionalMap ──────────────────────────────────────────────────────────────
 
-const RegionalMap: React.FC = () => {
+const RegionalMap: React.FC<{
+  regionalData: import('@/types').RegionalData[]
+}> = ({ regionalData }) => {
   const [tileLayer, setTileLayer] = useState<
     'street' | 'satellite' | 'terrain'
   >('street')
   const [showLayerMenu, setShowLayerMenu] = useState(false)
   const zoomInRef = useRef<(() => void) | null>(null)
   const zoomOutRef = useRef<(() => void) | null>(null)
+
+  const accessMap = useMemo(
+    () => new Map(regionalData.map((row) => [row.region, row.accessDensity])),
+    [regionalData],
+  )
+
+  const householdsMap = useMemo(
+    () => new Map(regionalData.map((row) => [row.region, row.households])),
+    [regionalData],
+  )
+
+  const serviceTypeMap = useMemo(
+    () => new Map(regionalData.map((row) => [row.region, row.serviceType])),
+    [regionalData],
+  )
+
+  const geoJsonData = useMemo(
+    () => ({
+      ...somalilandGeoJSON,
+      features: somalilandGeoJSON.features.map((feature) => {
+        const regionName = feature.properties?.name ?? 'Unknown'
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            access:
+              accessMap.get(regionName) ?? feature.properties?.access ?? 0,
+            households:
+              householdsMap.get(regionName) ??
+              feature.properties?.households ??
+              0,
+            serviceType:
+              serviceTypeMap.get(regionName) ??
+              feature.properties?.serviceType ??
+              'N/A',
+          },
+        }
+      }),
+    }),
+    [accessMap, householdsMap, serviceTypeMap],
+  )
 
   return (
     <div className='lg:col-span-6 bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col h-96'>
@@ -252,13 +296,19 @@ const RegionalMap: React.FC = () => {
             attribution={TILE_LAYERS[tileLayer].attribution}
           />
           <GeoJSON
-            data={somalilandGeoJSON}
+            data={geoJsonData}
             style={regionStyle}
             onEachFeature={(feature, layer) => {
-              const { name, access } = feature.properties!
+              const name = feature.properties?.name ?? 'Unknown'
+              const access = feature.properties?.access ?? 0
+              const serviceType = feature.properties?.serviceType ?? 'N/A'
+              const households = feature.properties?.households ?? 0
+
               layer.bindTooltip(
                 `<div style="font-weight:600">${name}</div>
-                 <div>Internet Access: <strong>${access}%</strong></div>`,
+                 <div>Internet Access: <strong>${access}%</strong></div>
+                 <div>Service Type: <strong>${serviceType}</strong></div>
+                 <div>Households: <strong>${households.toLocaleString()}</strong></div>`,
                 { sticky: true },
               )
               layer.on({
@@ -339,29 +389,41 @@ const KPICard: React.FC<{
 
 export const DashboardPage: React.FC = () => {
   const metricsQuery = useDashboardMetrics()
+  const regionalQuery = useRegionalData()
   const trendsQuery = useServiceTrends()
   const activityQuery = useActivityData()
   const surveysQuery = useSurveyResponses(5)
 
   const heatmapGrid = useMemo(() => {
-    const colors = ['bg-gray-200', 'bg-blue-100', 'bg-blue-300', 'bg-blue-600']
-    const seed = 12345
-    const result = []
-    for (let i = 0; i < 84; i++) {
-      const pseudo = Math.sin(seed * i) * 10000
-      const colorIdx = Math.floor((pseudo - Math.floor(pseudo)) * colors.length)
-      result.push(colors[Math.max(0, colorIdx)])
+    const grid = activityQuery.data || []
+    const flatValues = grid.flat()
+    const max = Math.max(...flatValues, 1)
+    const getColor = (value: number) => {
+      if (value <= 0) return 'bg-gray-200'
+      if (value <= max * 0.33) return 'bg-blue-100'
+      if (value <= max * 0.66) return 'bg-blue-300'
+      return 'bg-blue-600'
     }
-    return result
-  }, [])
+    return grid.map((row) => row.map(getColor))
+  }, [activityQuery.data])
+
+  const trendMax = useMemo(() => {
+    const values = trendsQuery.data?.flatMap((trend) => [
+      trend.digitalChannels,
+      trend.physicalOutlets,
+    ]) ?? [100]
+    return Math.max(...values, 100)
+  }, [trendsQuery.data])
 
   const isLoading =
     metricsQuery.isLoading ||
+    regionalQuery.isLoading ||
     trendsQuery.isLoading ||
     activityQuery.isLoading ||
     surveysQuery.isLoading
 
   const metrics = metricsQuery.data
+  const regionalData = regionalQuery.data || []
   const trends = trendsQuery.data || []
   const surveys = surveysQuery.data || []
 
@@ -413,7 +475,7 @@ export const DashboardPage: React.FC = () => {
 
           {/* ROW 2: MAP & TRENDS CHART */}
           <div className='grid grid-cols-1 lg:grid-cols-10 gap-6'>
-            <RegionalMap />
+            <RegionalMap regionalData={regionalData} />
 
             {/* Trends Chart (40%) */}
             <div className='lg:col-span-4 bg-white border border-gray-200 rounded-lg p-6 flex flex-col h-96'>
@@ -439,14 +501,18 @@ export const DashboardPage: React.FC = () => {
                         <div
                           className='bg-blue-600 rounded-t'
                           style={{
-                            height: `${(trend.digitalChannels / 100) * 100}%`,
+                            height: `${
+                              (trend.digitalChannels / trendMax) * 100
+                            }%`,
                             width: '40%',
                           }}
                         />
                         <div
                           className='bg-gray-400 rounded-t'
                           style={{
-                            height: `${(trend.physicalOutlets / 100) * 100}%`,
+                            height: `${
+                              (trend.physicalOutlets / trendMax) * 100
+                            }%`,
                             width: '40%',
                           }}
                         />
@@ -496,13 +562,21 @@ export const DashboardPage: React.FC = () => {
                   <span className='text-xs text-gray-600'>More</span>
                 </div>
               </div>
-              <div className='grid grid-cols-12 gap-1 h-40'>
-                {heatmapGrid.map((color, i) => (
-                  <div
-                    key={i}
-                    className={`${color} rounded cursor-pointer hover:scale-110 transition-transform`}
-                  />
-                ))}
+              <div className='grid grid-cols-7 gap-1 h-40'>
+                {heatmapGrid.length > 0 ? (
+                  heatmapGrid.flatMap((row, rowIndex) =>
+                    row.map((color, colIndex) => (
+                      <div
+                        key={`${rowIndex}-${colIndex}`}
+                        className={`${color} rounded cursor-pointer hover:scale-110 transition-transform`}
+                      />
+                    )),
+                  )
+                ) : (
+                  <div className='col-span-7 flex items-center justify-center text-gray-500'>
+                    No activity data available
+                  </div>
+                )}
               </div>
               <div className='flex justify-between mt-3 text-xs text-gray-600 px-1'>
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(

@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { MainLayout } from '@/layouts/MainLayout'
 import { useFileUpload, useProcessingHistory } from '@/hooks/useQueries'
-import { CloudUpload } from 'lucide-react'
+import { CircleCheck, CircleX, CloudUpload, LoaderCircle } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 
 /**
  * File Upload Drop-zone Component
@@ -78,10 +79,8 @@ const FileUploadZone: React.FC<{
 
       {isLoading && (
         <div className='mt-4 flex items-center justify-center gap-2'>
-          <div className='animate-spin'>
-            <span className='material-symbols-outlined text-blue-600'>
-              autorenew
-            </span>
+          <div className=''>
+            <LoaderCircle size={18} className='animate-spin text-blue-600' />
           </div>
           <p className='text-blue-600 font-medium'>Processing file...</p>
         </div>
@@ -99,6 +98,7 @@ export const DataIngestionPage: React.FC = () => {
   const [description, setDescription] = useState('')
   const uploadMutation = useFileUpload()
   const historyQuery = useProcessingHistory(10)
+  const queryClient = useQueryClient()
 
   const handleFileSelected = (file: File) => {
     setSelectedFile(file)
@@ -113,6 +113,9 @@ export const DataIngestionPage: React.FC = () => {
         fileType,
         description,
       })
+
+      queryClient.invalidateQueries()
+
       setSelectedFile(null)
       setDescription('')
       setFileType('survey')
@@ -211,9 +214,7 @@ export const DataIngestionPage: React.FC = () => {
 
             {uploadMutation.isError && (
               <div className='bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3'>
-                <span className='material-symbols-outlined text-red-600 mt-0.5'>
-                  error
-                </span>
+                <CircleX size={18} className='text-red-900' />
                 <div>
                   <p className='font-medium text-red-900'>Upload Failed</p>
                   <p className='text-sm text-red-800'>
@@ -225,9 +226,7 @@ export const DataIngestionPage: React.FC = () => {
 
             {uploadMutation.isSuccess && (
               <div className='bg-green-50 border border-green-200 rounded-lg p-4 flex items-start gap-3'>
-                <span className='material-symbols-outlined text-green-600 mt-0.5'>
-                  check_circle
-                </span>
+                <CircleCheck size={18} className='text-green-600' />
                 <div>
                   <p className='font-medium text-green-900'>
                     Upload Successful
@@ -270,19 +269,17 @@ export const DataIngestionPage: React.FC = () => {
               <tbody className='divide-y divide-gray-200'>
                 {uploadHistory.length > 0 ? (
                   uploadHistory.map((upload) => (
-                    <tr key={upload.fileId} className='hover:bg-gray-50'>
+                    <tr key={upload.id} className='hover:bg-gray-50'>
                       <td className='px-6 py-3 text-gray-900 font-medium'>
-                        {upload.fileName}
+                        {upload.filename}
                       </td>
+                      <td className='px-6 py-3 text-gray-600'>Survey</td>
                       <td className='px-6 py-3 text-gray-600'>
-                        {upload.uploadedAt}
-                      </td>
-                      <td className='px-6 py-3 text-gray-600'>
-                        {new Date(upload.uploadedAt).toLocaleDateString()}
+                        {new Date(upload.created_at).toLocaleDateString()}
                       </td>
                       <td className='px-6 py-3'>
                         <span
-                          className={`px-3 py-1 text-xs font-semibold rounded ${
+                          className={`px-3 py-1 text-xs rounded ${
                             upload.status === 'completed'
                               ? 'bg-green-100 text-green-800'
                               : upload.status === 'processing'
@@ -290,7 +287,7 @@ export const DataIngestionPage: React.FC = () => {
                                 : 'bg-red-100 text-red-800'
                           }`}
                         >
-                          {upload.status.toUpperCase()}
+                          {upload.status.toLowerCase()}
                         </span>
                       </td>
                     </tr>
