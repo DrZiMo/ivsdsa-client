@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { MainLayout } from '@/layouts/MainLayout'
 import { useFileUpload, useProcessingHistory } from '@/hooks/useQueries'
+import { CloudUpload } from 'lucide-react'
 
 /**
  * File Upload Drop-zone Component
@@ -51,9 +52,7 @@ const FileUploadZone: React.FC<{
       }`}
     >
       <div className='flex flex-col items-center gap-3'>
-        <span className='material-symbols-outlined text-4xl text-gray-600'>
-          cloud_upload
-        </span>
+        <CloudUpload size={60} className='text-gray-600' />
         <div>
           <p className='text-gray-900 font-semibold'>
             Drag and drop your data file here

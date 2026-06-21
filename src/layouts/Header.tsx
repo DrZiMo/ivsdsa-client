@@ -1,3 +1,4 @@
+import { Search } from 'lucide-react'
 import { useState } from 'react'
 
 /**
@@ -15,14 +16,12 @@ export const Header: React.FC<{ pageTitle?: string }> = ({
       <div className='flex items-center gap-6'>
         <h2 className='text-2xl font-bold text-gray-900'>{pageTitle}</h2>
         <div className='hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-80'>
-          <span className='material-symbols-outlined text-gray-600 text-sm'>
-            search
-          </span>
+          <Search size={18} />
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder='Search datasets...'
-            className='bg-transparent border-none focus:ring-0 text-sm w-full px-2 outline-none'
+            className='bg-transparent border-none focus:ring-0! text-sm w-full px-2 outline-none!'
           />
         </div>
       </div>
@@ -30,7 +29,7 @@ export const Header: React.FC<{ pageTitle?: string }> = ({
       {/* Right Section: Navigation and User Menu */}
       <div className='flex items-center gap-4'>
         {/* Navigation Tabs */}
-        <nav className='flex items-center gap-6 mr-4 border-r border-gray-200 pr-6'>
+        {/* <nav className='flex items-center gap-6 mr-4 border-r border-gray-200 pr-6'>
           <a
             href='/dashboard'
             className='text-sm font-semibold text-blue-600 border-b-2 border-blue-600 py-4'
@@ -43,15 +42,15 @@ export const Header: React.FC<{ pageTitle?: string }> = ({
           >
             Reports
           </a>
-        </nav>
+        </nav> */}
 
         {/* Icons */}
-        <button className='p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors'>
+        {/* <button className='p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors'>
           <span className='material-symbols-outlined'>notifications</span>
         </button>
         <button className='p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors'>
           <span className='material-symbols-outlined'>settings</span>
-        </button>
+        </button> */}
 
         {/* User Avatar */}
         <div className='h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden border border-gray-300'>

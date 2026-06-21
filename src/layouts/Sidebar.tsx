@@ -1,10 +1,22 @@
 import { useFilterStore } from '@/store/useFilterStore'
+import {
+  Banknote,
+  Database,
+  Earth,
+  House,
+  TrendingUp,
+  Users,
+} from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 
-/**
- * Sidebar Navigation Component
- * Displays app branding, navigation links, and global filters
- */
+const navLinks = [
+  { href: '/dashboard', label: 'Analytics', icon: TrendingUp },
+  { href: '/data-ingestion', label: 'Data Management', icon: Database },
+  { href: '/user-management', label: 'User Management', icon: Users },
+]
+
 export const Sidebar: React.FC = () => {
+  const location = useLocation()
   const {
     region,
     incomeLevel,
@@ -13,11 +25,6 @@ export const Sidebar: React.FC = () => {
     setIncome,
     setResidence,
   } = useFilterStore()
-
-  const handleApplyFilters = () => {
-    // Filters are automatically reactive via Zustand
-    // No action needed here; just indicate visual feedback
-  }
 
   return (
     <aside className='fixed left-0 top-0 h-full w-64 flex flex-col z-40 bg-slate-900 border-r border-slate-700 text-white overflow-y-auto'>
@@ -34,27 +41,23 @@ export const Sidebar: React.FC = () => {
 
       {/* Navigation Links */}
       <nav className='flex-1 mt-4'>
-        <a
-          href='/dashboard'
-          className='flex items-center gap-4 px-6 py-3 text-white border-l-4 border-blue-500 bg-slate-800 transition-all'
-        >
-          <span className='material-symbols-outlined'>analytics</span>
-          <span className='text-sm font-medium'>Analytics</span>
-        </a>
-        <a
-          href='/data-ingestion'
-          className='flex items-center gap-4 px-6 py-3 text-slate-400 hover:text-white transition-colors hover:bg-slate-800'
-        >
-          <span className='material-symbols-outlined'>database</span>
-          <span className='text-sm font-medium'>Data Management</span>
-        </a>
-        <a
-          href='/user-management'
-          className='flex items-center gap-4 px-6 py-3 text-slate-400 hover:text-white transition-colors hover:bg-slate-800'
-        >
-          <span className='material-symbols-outlined'>group</span>
-          <span className='text-sm font-medium'>User Management</span>
-        </a>
+        {navLinks.map(({ href, label, icon: Icon }) => {
+          const isActive = location.pathname === href
+          return (
+            <a
+              key={href}
+              href={href}
+              className={`flex items-center gap-4 px-6 py-3 transition-all text-sm font-medium border-l-4 ${
+                isActive
+                  ? 'border-blue-500 bg-slate-800 text-white'
+                  : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </a>
+          )
+        })}
       </nav>
 
       {/* Global Filters Section */}
@@ -65,7 +68,7 @@ export const Sidebar: React.FC = () => {
         <div className='space-y-3'>
           <div>
             <label className='flex items-center gap-2 text-slate-400 mb-2 text-xs font-medium'>
-              <span className='material-symbols-outlined text-sm'>public</span>
+              <Earth size={18} />
               Region
             </label>
             <select
@@ -73,16 +76,18 @@ export const Sidebar: React.FC = () => {
               onChange={(e) => setRegion(e.target.value)}
               className='w-full bg-slate-800 border border-slate-700 text-white text-sm rounded px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:border-transparent'
             >
-              <option>Metropolitan Area</option>
-              <option>Rural North</option>
-              <option>Coastal East</option>
+              <option value=''>All Regions</option>
+              <option value='Maroodi Jeex'>Maroodi Jeex</option>
+              <option value='Saxil'>Saxil</option>
+              <option value='Togdheer'>Togdheer</option>
+              <option value='Sool'>Sool</option>
+              <option value='Awdal'>Awdal</option>
+              <option value='Sanaag'>Sanaag</option>
             </select>
           </div>
           <div>
             <label className='flex items-center gap-2 text-slate-400 mb-2 text-xs font-medium'>
-              <span className='material-symbols-outlined text-sm'>
-                payments
-              </span>
+              <Banknote size={18} />
               Income Level
             </label>
             <select
@@ -98,7 +103,7 @@ export const Sidebar: React.FC = () => {
           </div>
           <div>
             <label className='flex items-center gap-2 text-slate-400 mb-2 text-xs font-medium'>
-              <span className='material-symbols-outlined text-sm'>home</span>
+              <House size={18} />
               Residence
             </label>
             <select
@@ -112,10 +117,7 @@ export const Sidebar: React.FC = () => {
             </select>
           </div>
         </div>
-        <button
-          onClick={handleApplyFilters}
-          className='w-full mt-4 bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700 transition-colors text-sm'
-        >
+        <button className='w-full mt-4 bg-blue-600 text-white font-medium py-2 rounded hover:bg-blue-700 transition-colors text-sm'>
           Apply Filters
         </button>
       </div>

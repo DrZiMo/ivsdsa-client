@@ -7,6 +7,7 @@ import {
   useDeleteUser,
 } from '@/hooks/useQueries'
 import type { UserData } from '@/types'
+import { LoaderCircle, Plus, X } from 'lucide-react'
 
 /**
  * User Management Page
@@ -101,7 +102,7 @@ export const UserManagementPage: React.FC = () => {
             onClick={handleAddUser}
             className='bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2'
           >
-            <span className='material-symbols-outlined'>add</span>
+            <Plus size={18} />
             Add User
           </button>
         </div>
@@ -111,10 +112,8 @@ export const UserManagementPage: React.FC = () => {
           <div className='overflow-x-auto'>
             {usersQuery.isLoading ? (
               <div className='p-12 text-center'>
-                <div className='animate-spin mb-4 inline-block'>
-                  <span className='material-symbols-outlined text-3xl text-blue-600'>
-                    autorenew
-                  </span>
+                <div className='mb-4 inline-block'>
+                  <LoaderCircle className='animate-spin' />
                 </div>
                 <p className='text-gray-600'>Loading users...</p>
               </div>
@@ -219,7 +218,7 @@ export const UserManagementPage: React.FC = () => {
                 onClick={() => setIsModalOpen(false)}
                 className='text-gray-600 hover:text-gray-900'
               >
-                <span className='material-symbols-outlined'>close</span>
+                <X size={18} />
               </button>
             </div>
 
