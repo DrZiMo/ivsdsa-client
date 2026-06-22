@@ -427,7 +427,7 @@ export const DashboardPage: React.FC = () => {
       ) : (
         <div className='space-y-6'>
           {/* ROW 1: KPI CARDS */}
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2'>
             {metrics && (
               <>
                 <KPICard
@@ -447,6 +447,12 @@ export const DashboardPage: React.FC = () => {
                 <KPICard
                   label='Service Preference'
                   value={metrics.servicePreference}
+                />
+                <KPICard
+                  label='Mobile Ownership'
+                  value={`${metrics.mobileOwnership.toFixed(1)}%`}
+                  trendType='up'
+                  progressPercentage={metrics.mobileOwnership}
                 />
                 <KPICard
                   label='Avg. Data Usage'
@@ -578,12 +584,6 @@ export const DashboardPage: React.FC = () => {
                 <h3 className='font-semibold text-gray-900'>
                   Recent Survey Responses
                 </h3>
-                <a
-                  href='/surveys'
-                  className='text-blue-600 text-sm font-medium hover:underline'
-                >
-                  View All
-                </a>
               </div>
               <div className='overflow-x-auto flex-1'>
                 <table className='w-full text-sm'>

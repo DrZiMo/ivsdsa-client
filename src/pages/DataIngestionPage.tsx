@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { useFileUpload, useProcessingHistory } from '@/hooks/useQueries'
-import { CircleCheck, CircleX, CloudUpload, LoaderCircle } from 'lucide-react'
+import {
+  CircleCheck,
+  CircleX,
+  CloudUpload,
+  LoaderCircle,
+  NotepadText,
+} from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 
 /**
@@ -140,35 +146,17 @@ export const DataIngestionPage: React.FC = () => {
           </div>
 
           <div className='space-y-6'>
-            {/* File Type and Description */}
-            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-              <div>
-                <label className='block text-sm font-medium text-gray-900 mb-2'>
-                  Data Type
-                </label>
-                <select
-                  value={fileType}
-                  onChange={(e) => setFileType(e.target.value)}
-                  className='w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                >
-                  <option value='survey'>Survey Responses</option>
-                  <option value='household'>Household Data</option>
-                  <option value='connectivity'>Connectivity Metrics</option>
-                  <option value='regional'>Regional Distribution</option>
-                </select>
-              </div>
-              <div>
-                <label className='block text-sm font-medium text-gray-900 mb-2'>
-                  Description (Optional)
-                </label>
-                <input
-                  type='text'
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder='e.g., Q4 2023 Survey'
-                  className='w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-                />
-              </div>
+            <div>
+              <label className='block text-sm font-medium text-gray-900 mb-2'>
+                Description (Optional)
+              </label>
+              <input
+                type='text'
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder='e.g., Q4 2023 Survey'
+                className='w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+              />
             </div>
 
             {/* File Upload Zone */}
@@ -181,9 +169,7 @@ export const DataIngestionPage: React.FC = () => {
             {selectedFile && (
               <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between'>
                 <div className='flex items-center gap-3'>
-                  <span className='material-symbols-outlined text-blue-600'>
-                    description
-                  </span>
+                  <NotepadText size={18} className='text-blue-600' />
                   <div>
                     <p className='font-medium text-gray-900'>
                       {selectedFile.name}

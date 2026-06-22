@@ -18,6 +18,7 @@ export interface DashboardMetrics {
   totalHouseholds: number
   internetAccess: number
   servicePreference: string
+  mobileOwnership: number
   avgDataUsage: string
   householdsTrend: number
   accessTrend: number
