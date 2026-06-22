@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { MainLayout } from '@/layouts/MainLayout'
 import { useFileUpload, useProcessingHistory } from '@/hooks/useQueries'
 import { CircleCheck, CircleX, CloudUpload, LoaderCircle } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -127,7 +126,7 @@ export const DataIngestionPage: React.FC = () => {
   const uploadHistory = historyQuery.data || []
 
   return (
-    <MainLayout pageTitle='Data Management'>
+    <>
       <div className='space-y-8'>
         {/* Upload Section */}
         <div className='bg-white border border-gray-200 rounded-lg p-8'>
@@ -307,6 +306,6 @@ export const DataIngestionPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </MainLayout>
+    </>
   )
 }

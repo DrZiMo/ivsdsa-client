@@ -1,8 +1,8 @@
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
+import { Outlet } from 'react-router-dom'
 
 interface MainLayoutProps {
-  children: React.ReactNode
   pageTitle?: string
 }
 
@@ -11,7 +11,6 @@ interface MainLayoutProps {
  * Combines Sidebar and Header with main content area
  */
 export const MainLayout: React.FC<MainLayoutProps> = ({
-  children,
   pageTitle = 'Dashboard',
 }) => {
   return (
@@ -26,7 +25,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
 
         {/* Page Content */}
         <div className='flex-1 mt-16 p-6 max-w-7xl mx-auto w-full'>
-          {children}
+          <Outlet />
         </div>
       </main>
     </div>

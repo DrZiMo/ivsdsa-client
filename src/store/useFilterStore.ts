@@ -17,9 +17,9 @@ interface FilterStore extends FilterState {
 }
 
 const initialState: FilterState = {
-  region: 'Metropolitan Area',
+  region: 'Maroodi Jeex',
   incomeLevel: 'All Tiers',
-  residenceType: 'Apartment/Condo',
+  residenceType: 'Rural',
 };
 
 export const useFilterStore = create<FilterStore>((set) => ({

@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from 'react'
-import { MainLayout } from '@/layouts/MainLayout'
 import {
   useDashboardMetrics,
   useRegionalData,
@@ -296,6 +295,7 @@ const RegionalMap: React.FC<{
             attribution={TILE_LAYERS[tileLayer].attribution}
           />
           <GeoJSON
+            key={JSON.stringify(geoJsonData)}
             data={geoJsonData}
             style={regionStyle}
             onEachFeature={(feature, layer) => {
@@ -344,27 +344,13 @@ const KPICard: React.FC<{
   trendType?: 'up' | 'down'
   icon?: string
   progressPercentage?: number
-}> = ({ label, value, trend, trendType = 'up', icon, progressPercentage }) => {
-  const trendColor = trendType === 'up' ? 'text-green-600' : 'text-red-600'
-
+}> = ({ label, value, icon, progressPercentage }) => {
   return (
     <div className='bg-white border border-gray-200 p-6 rounded-lg flex flex-col gap-2 hover:border-blue-500 transition-colors'>
       <span className='text-xs font-semibold text-gray-600 uppercase tracking-wide'>
         {label}
       </span>
-      <div className='flex items-end gap-2'>
-        <span className='text-3xl font-bold text-gray-900'>{value}</span>
-        {trend !== undefined && (
-          <span
-            className={`${trendColor} text-sm font-medium flex items-center mb-1`}
-          >
-            <span className='material-symbols-outlined text-xs'>
-              {trendType === 'up' ? 'trending_up' : 'trending_down'}
-            </span>
-            {trend}%
-          </span>
-        )}
-      </div>
+      <span className='text-3xl font-bold text-gray-900'>{value}</span>
       {progressPercentage !== undefined && (
         <div className='w-full bg-gray-200 h-1 rounded-full overflow-hidden mt-2'>
           <div
@@ -428,7 +414,7 @@ export const DashboardPage: React.FC = () => {
   const surveys = surveysQuery.data || []
 
   return (
-    <MainLayout pageTitle='Dashboard'>
+    <>
       {isLoading ? (
         <div className='flex items-center justify-center h-96'>
           <div className='text-center'>
@@ -461,7 +447,6 @@ export const DashboardPage: React.FC = () => {
                 <KPICard
                   label='Service Preference'
                   value={metrics.servicePreference}
-                  icon='account_balance_wallet'
                 />
                 <KPICard
                   label='Avg. Data Usage'
@@ -655,6 +640,6 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       )}
-    </MainLayout>
+    </>
   )
 }

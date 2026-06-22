@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryProvider } from '@/api/queryClient'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { DataIngestionPage } from '@/pages/DataIngestionPage'
-import { UserManagementPage } from '@/pages/UserManagementPage'
+import { MainLayout } from './layouts'
 
 /**
  * Main App Component
@@ -14,14 +14,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Dashboard - Main landing page */}
-          <Route path='/dashboard' element={<DashboardPage />} />
-          <Route path='/' element={<Navigate to='/dashboard' replace />} />
+          <Route path='/' element={<MainLayout />}>
+            <Route path='/dashboard' element={<DashboardPage />} />
+
+            <Route path='/data-ingestion' element={<DataIngestionPage />} />
+          </Route>
 
           {/* Data Management */}
-          <Route path='/data-ingestion' element={<DataIngestionPage />} />
-
-          {/* User Management */}
-          <Route path='/user-management' element={<UserManagementPage />} />
 
           {/* Catch-all - redirect to dashboard */}
           <Route path='*' element={<Navigate to='/dashboard' replace />} />

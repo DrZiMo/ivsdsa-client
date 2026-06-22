@@ -1,18 +1,10 @@
 import { useFilterStore } from '@/store/useFilterStore'
-import {
-  Banknote,
-  Database,
-  Earth,
-  House,
-  TrendingUp,
-  Users,
-} from 'lucide-react'
-import { useLocation } from 'react-router-dom'
+import { Banknote, Database, Earth, House, TrendingUp } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
 
 const navLinks = [
   { href: '/dashboard', label: 'Analytics', icon: TrendingUp },
   { href: '/data-ingestion', label: 'Data Management', icon: Database },
-  { href: '/user-management', label: 'User Management', icon: Users },
 ]
 
 export const Sidebar: React.FC = () => {
@@ -40,13 +32,13 @@ export const Sidebar: React.FC = () => {
       </div>
 
       {/* Navigation Links */}
-      <nav className='flex-1 mt-4'>
+      <nav className='flex-1'>
         {navLinks.map(({ href, label, icon: Icon }) => {
           const isActive = location.pathname === href
           return (
-            <a
+            <Link
               key={href}
-              href={href}
+              to={href}
               className={`flex items-center gap-4 px-6 py-3 transition-all text-sm font-medium border-l-4 ${
                 isActive
                   ? 'border-blue-500 bg-slate-800 text-white'
@@ -55,7 +47,7 @@ export const Sidebar: React.FC = () => {
             >
               <Icon size={18} />
               <span>{label}</span>
-            </a>
+            </Link>
           )
         })}
       </nav>
@@ -95,10 +87,10 @@ export const Sidebar: React.FC = () => {
               onChange={(e) => setIncome(e.target.value)}
               className='w-full bg-slate-800 border border-slate-700 text-white text-sm rounded px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:border-transparent'
             >
-              <option>All Tiers</option>
-              <option>Low Income</option>
-              <option>Middle Income</option>
-              <option>High Income</option>
+              <option value=''>All Tiers</option>
+              <option value='low'>Low Income</option>
+              <option value='middle'>Middle Income</option>
+              <option value='high'>High Income</option>
             </select>
           </div>
           <div>
@@ -111,9 +103,9 @@ export const Sidebar: React.FC = () => {
               onChange={(e) => setResidence(e.target.value)}
               className='w-full bg-slate-800 border border-slate-700 text-white text-sm rounded px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:border-transparent'
             >
-              <option>Apartment/Condo</option>
-              <option>Single Family</option>
-              <option>Social Housing</option>
+              <option value=''>All Types</option>
+              <option value='Urban'>Urban</option>
+              <option value='Rural'>Rural</option>
             </select>
           </div>
         </div>
